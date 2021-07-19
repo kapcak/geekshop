@@ -85,3 +85,9 @@ def admin_product_update(request, pk):
         'selected_product': selected_product,
         }
     return render(request, 'admins/admin-product-update-delete.html', context)
+
+
+def admin_product_remove(request, pk):
+    product = Product.objects.get(id=pk)
+    product.delete()
+    return HttpResponseRedirect(reverse('admins:admin_product_read'))
