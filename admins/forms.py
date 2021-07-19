@@ -1,4 +1,4 @@
-from products.models import Product
+from products.models import Product, ProductCategory
 from django.forms import fields
 from users.models import User
 from django import forms
@@ -25,7 +25,7 @@ class ProductPropertyForm(UserChangeForm):
     image = forms.ImageField(widget=forms.FileInput(attrs={'class': 'custom-file-input'}), required=False)
     price = forms.CharField(widget=forms.NumberInput(attrs={'class': 'form-control py-4'}))
     quantity = forms.CharField(widget=forms.NumberInput(attrs={'class': 'form-control py-4'}))
-    # category = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4', 'readonly': True}))  
+    category = forms.ModelChoiceField(queryset=ProductCategory.objects.all(), widget=forms.RadioSelect(attrs={'id': 'value'}))  
     class Meta:
         model = Product
-        fields = ('name', 'description', 'image', 'price', 'quantity')
+        fields = ('name', 'description', 'image', 'price', 'quantity', 'category')
