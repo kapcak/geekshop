@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.urls import reverse
 from users.models import User
 from products.models import Product
-from admins.forms import UserAdminRegistrationForm, UserAdminProfileForm
+from admins.forms import UserAdminRegistrationForm, UserAdminProfileForm, ProductPropertyForm
 
 # Create your views here.
 
@@ -68,3 +68,20 @@ def admin_product_read(request):
         'products': Product.objects.all(),
     }
     return render(request, 'admins/admin-product-read.html', context)
+
+
+def admin_product_update(request, pk):
+    selected_product = Product.objects.get(id=pk)
+    if request.method == 'POST':
+        form = ProductPropertyForm(instance=selected_product, files=request.FILES, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('admins:admin_product_read'))
+    else:
+        form = ProductPropertyForm(instance=selected_product)
+    context = {
+        'title': 'Админ-панель - Редактирование товара',
+        'form': form,
+        'selected_product': selected_product,
+        }
+    return render(request, 'admins/admin-product-update-delete.html', context)
