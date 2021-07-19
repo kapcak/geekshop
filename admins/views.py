@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.contrib.auth.decorators import user_passes_test
 from django.urls import reverse
 from users.models import User
+from products.models import Product
 from admins.forms import UserAdminRegistrationForm, UserAdminProfileForm
 
 # Create your views here.
@@ -59,3 +60,11 @@ def admin_users_remove(request, pk):
     user.is_active = False
     user.save()
     return HttpResponseRedirect(reverse('admins:admin_users'))
+
+
+def admin_product_read(request):
+    context = {
+        'title': 'Админ-панель - Продукты', 
+        'products': Product.objects.all(),
+    }
+    return render(request, 'admins/admin-product-read.html', context)
