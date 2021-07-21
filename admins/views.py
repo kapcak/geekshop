@@ -21,6 +21,11 @@ class UserListView(ListView):
     model = User
     template_name = 'admins/admin-users-read.html'
 
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        context['title'] = 'Админ-Панель - Пользователи'
+        return context
+
 # @user_passes_test(lambda u: u.is_staff)
 # def admin_users(request):
 #     context = {'title': 'Админ-Панель - Пользователи',
