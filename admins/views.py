@@ -102,6 +102,8 @@ class UserDeleteView(DeleteView):
 #     return HttpResponseRedirect(reverse('admins:admin_users'))
 
 
+
+
 @user_passes_test(lambda u: u.is_staff)
 def admin_product_read(request):
     context = {
