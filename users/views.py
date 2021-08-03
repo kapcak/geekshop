@@ -2,8 +2,10 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.core.mail import send_mail
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
 from baskets.models import Basket
+from django.conf import settings
 
 
 # Create your views here.
@@ -32,7 +34,10 @@ def registration(request):
         form = UserRegistrationForm(data=request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Вы успешно зарегистрировались!')
+            if send_verify_mail(form.instance):
+                messages.success(request, 'Сообщение для активации отправлено!')
+            else:
+                messages.warning(request, 'Не удалось отправить ссылку на активацию!')
             return HttpResponseRedirect(reverse('users:login'))
     else:
         form = UserRegistrationForm()
@@ -63,3 +68,14 @@ def profile(request):
         'form': form,
         'baskets': Basket.objects.filter(user=request.user)}
     return render(request, 'users/profile.html', context)
+
+
+def verify(request, email, activation_key):
+    pass
+
+
+def send_verify_mail(user):
+    subject = 'Verify your account'
+    link = reverse('users:verify', args=[user.email, user.activation_key])
+    message = f'{settings.DOMAIN}{link}'
+    return send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)

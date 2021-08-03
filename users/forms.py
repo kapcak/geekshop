@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from users.models import User
 from django import forms
-
+from random import random
+from hashlib import sha1
 
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
@@ -31,6 +32,13 @@ class UserRegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+    
+
+    def save(self):
+        user = super().save()
+        user.is_active = False
+        salt = sha1(str(random()).encode('utf8')).hexdigest()[:6]
+        user.activation_key = sha1((user.email + salt).encode('utf8')).hexdigest()
 
 
 
