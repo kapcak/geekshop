@@ -3,7 +3,7 @@ from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.core.mail import send_mail
-from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, User
 from baskets.models import Basket
 from django.conf import settings
 
@@ -71,7 +71,14 @@ def profile(request):
 
 
 def verify(request, email, activation_key):
-    pass
+    user = User.objects.filter(email=email).first()
+    if user:
+        if user.activation_key == activation_key and not user.is_activation_key_expired():
+            user.is_active = True
+            user.save()
+            auth.login(request, user)
+            return render(request, 'users/verify.html')
+    return HttpResponseRedirect(reverse('index'))
 
 
 def send_verify_mail(user):

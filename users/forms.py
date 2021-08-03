@@ -39,6 +39,9 @@ class UserRegistrationForm(UserCreationForm):
         user.is_active = False
         salt = sha1(str(random()).encode('utf8')).hexdigest()[:6]
         user.activation_key = sha1((user.email + salt).encode('utf8')).hexdigest()
+        user.save()
+
+        return user
 
 
 
