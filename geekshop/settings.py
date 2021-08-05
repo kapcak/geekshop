@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os, json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'users',
     'baskets',
     'admins',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -74,7 +76,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'geekshop.wsgi.application'
 
-
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.google.GoogleOAuth2',
+)
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -147,3 +152,11 @@ EMAIL_HOST_PASSWORD = 'geekshop'
 EMAIL_USER_SSL = False
 
 EMAIL_HOST_USER, EMAIL_HOST_PASSWORD = None, None
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+with open('geekshop/google.json', 'r') as f:
+    GOOGLE = json.load(f)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = GOOGLE['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY'] 
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE['SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET']
