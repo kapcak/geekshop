@@ -5,7 +5,7 @@ from django.db import models
 from django.forms.models import inlineformset_factory
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.db import transaction
 
 from ordersapp.models import Order, OrderItem
@@ -96,3 +96,9 @@ class OrderItemUpdate(UpdateView):
 class OrderItemsDelete(DeleteView):
     model = Order
     success_url = reverse_lazy("ordersapp:orders_list")
+
+
+class OrderItemsView(DetailView):
+    model = Order
+
+
