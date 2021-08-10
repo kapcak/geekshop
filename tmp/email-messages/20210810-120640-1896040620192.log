@@ -1,0 +1,11 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Verify your account
+From: django@geekshop.local
+To: john@snow.com
+Date: Tue, 10 Aug 2021 09:06:40 -0000
+Message-ID: <162858640068.14400.16450717907208126600@PCINGPOZ.szfk.biz>
+
+http://localhost:8000/users/verify/john@snow.com/d67155ade9f9e7d8377be986ecc7ffe7adef6d6a
+-------------------------------------------------------------------------------
