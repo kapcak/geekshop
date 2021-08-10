@@ -1,4 +1,5 @@
 from django.http import request
+from django.views.generic.edit import DeleteView
 from ordersapp.forms import OrderItemForm
 from django.db import models
 from django.forms.models import inlineformset_factory
@@ -90,3 +91,8 @@ class OrderItemUpdate(UpdateView):
 
 
         return super().form_valid(form)
+
+
+class OrderItemsDelete(DeleteView):
+    model = Order
+    success_url = reverse_lazy("ordersapp:orders_list")
