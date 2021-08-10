@@ -6,6 +6,8 @@ from django.core.mail import send_mail
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, User
 from baskets.models import Basket
 from django.conf import settings
+from django.db import transaction
+from .forms import ShopUserProfileEditForm
 
 
 # Create your views here.
@@ -52,20 +54,23 @@ def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('index'))
 
-
+@transaction.atomic
 @login_required
 def profile(request):
     if request.method == 'POST':
         form = UserProfileForm(instance=request.user, files=request.FILES, data=request.POST)
-        if form.is_valid():
+        profile_form = ShopUserProfileEditForm(request.POST, instance=request.user.shopuserprofile)
+        if form.is_valid() and profile_form.is_valid():
             form.save()
             messages.success(request, 'Информация успешно обновлена!')
             return HttpResponseRedirect(reverse('users:profile'))
     else:
         form = UserProfileForm(instance=request.user)
+        profile_form = ShopUserProfileEditForm(instance=request.user.shopuserprofile)
     context = {
         'title': 'GeekShop - Личный кабинет',
         'form': form,
+        'profile_form': profile_form,
         'baskets': Basket.objects.filter(user=request.user)}
     return render(request, 'users/profile.html', context)
 
@@ -76,7 +81,7 @@ def verify(request, email, activation_key):
         if user.activation_key == activation_key and not user.is_activation_key_expired():
             user.is_active = True
             user.save()
-            auth.login(request, user)
+            auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return render(request, 'users/verify.html')
     return HttpResponseRedirect(reverse('index'))
 

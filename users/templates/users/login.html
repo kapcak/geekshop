@@ -41,6 +41,9 @@
                                 <a class="small" href="#">Забыли пароль?</a>
                                 <input class="btn btn-primary" type="submit" value="Авторизоваться">
                             </div>
+                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                        <a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}?next=/">Вход через Google</a>
+                    </div>
                         </form>
                     </div>
                     <div class="card-footer text-center">
