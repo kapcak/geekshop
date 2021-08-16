@@ -5,6 +5,8 @@ from django.db.models.deletion import CASCADE
 from products.models import Product
 
 # Create your models here.
+
+
 class Order(models.Model):
     FORMING = 'FM'
     SENT_TO_PROCEED = 'STP'
@@ -20,7 +22,8 @@ class Order(models.Model):
         (CANCELED, 'отменен'),
     )
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
     status = models.CharField(choices=STATUSES, default=FORMING, max_length=3)
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -47,8 +50,18 @@ class Order(models.Model):
         self.save()
 
 
+class OrderItemQuerySet(models.QuerySet):
+
+    def delete(self, *args, **kwargs):
+        for object in self:
+            object.product.quantity += object.quantity
+            object.product.save()
+        super().delete(*args, **kwargs)
+
+
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='orderitems')
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name='orderitems')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
 
@@ -65,17 +78,9 @@ class OrderItem(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk:
-            self.product.quantity -= self.quantity - self.__class__.get_item(self.pk).quantity
+            self.product.quantity -= self.quantity - \
+                self.__class__.get_item(self.pk).quantity
         else:
             self.product.quantity -= self.quantity
         self.product.save()
         super().save(*args, **kwargs)
-
-
-class OrderItemQuerySet(models.QuerySet):
-
-    def delete(self, *args, **kwargs):
-        for object in self:
-            object.product.quantity += object.quantity
-            object.product.save()
-        super().delete(*args, **kwargs)

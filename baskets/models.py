@@ -4,6 +4,15 @@ from products.models import Product
 
 
 # Create your models here.
+class BasketQuerySet(models.QuerySet):
+
+    def delete(self, *args, **kwargs):
+        for object in self:
+            object.product.quantity += object.quantity
+            object.product.save()
+        super().delete(*args, **kwargs)
+        
+
 class Basket(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -40,10 +49,3 @@ class Basket(models.Model):
         super().save(*args, **kwargs)
 
 
-class BasketQuerySet(models.QuerySet):
-
-    def delete(self, *args, **kwargs):
-        for object in self:
-            object.product.quantity += object.quantity
-            object.product.save()
-        super().delete(*args, **kwargs)
